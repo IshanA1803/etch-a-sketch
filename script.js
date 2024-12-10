@@ -15,6 +15,7 @@ function gridMaker(slider){
         block.style.height=blockHeight+'px';
         block.style.width=blockHeight+'px';
         block.classList.add("pixel");
+        block.setAttribute("data-darkness","0");
         grid.appendChild(block);
     }
     //Display the dimensions over the slider 
@@ -52,6 +53,7 @@ let selectedColor="black";
 const paintBrush=document.querySelector(".paint");
 paintBrush.addEventListener("click",()=>{
     rainbowMode=0;
+    pencilMode=0;
     const colorInput=document.querySelector("#colorInput");
     selectedColor=colorInput.value;
     colorInput.addEventListener('input',()=>{
@@ -62,16 +64,18 @@ paintBrush.addEventListener("click",()=>{
 })
 
 //Function for Pencil mode
+let pencilMode=0;
 const pencil=document.querySelector(".pencil");
 pencil.addEventListener('click',()=>{
     rainbowMode=0;
-    selectedColor="rgba(0,0,0,0.1)";
+    pencilMode=1;
 })
 
 //Function for Rainbowmode.
 let rainbowMode=0;
 const rainbow=document.querySelector(".rainbow");
 rainbow.addEventListener("click",()=>{
+    pencilMode=0;
     rainbowMode=1;
 })
 
@@ -87,6 +91,7 @@ function randomRGB(){
 const eraser=document.querySelector(".eraser");
 eraser.addEventListener('click',()=>{
     rainbowMode=0;
+    pencilMode=0;
     selectedColor="white";
 })
 
@@ -97,6 +102,12 @@ grid.addEventListener("mousedown",function(e){
     mouseDown=1;
     if(rainbowMode===1){
         randomRGB();
+    }else if(pencilMode==1){
+        let darkCount=e.target.getAttribute("data-darkness");
+        let currentCount=+darkCount+1;
+        e.target.setAttribute("data-darkness",currentCount);
+        let anchorValue=Math.min(10,currentCount)/10;
+        selectedColor=`rgba(0,0,0,${anchorValue})`;
     }
     e.target.style.backgroundColor=selectedColor;
 })
@@ -107,6 +118,12 @@ grid.addEventListener("mouseover",function(e){
     if(mouseDown===1){
         if(rainbowMode===1){
             randomRGB();
+        }else if(pencilMode==1){
+            let darkCount=e.target.getAttribute("data-darkness");
+            let currentCount=+darkCount+1;
+            e.target.setAttribute("data-darkness",currentCount);
+            let anchorValue=Math.min(10,currentCount)/10;
+            selectedColor=`rgba(0,0,0,${anchorValue})`;
         }
         e.target.style.backgroundColor=selectedColor;
     }
@@ -119,5 +136,6 @@ clearButton.addEventListener('click',()=>{
     const pixels=document.querySelectorAll(".pixel");
     pixels.forEach((pixel)=>{
         pixel.style.backgroundColor="white";
+        pixel.setAttribute("data-darkness","0");
     });
 })
